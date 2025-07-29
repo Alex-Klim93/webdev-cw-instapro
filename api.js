@@ -73,7 +73,6 @@ export function addPost({ token, description, imageUrl }) {
     method: 'POST',
     headers: {
       Authorization: token, // Передаем токен в заголовке
-      'Content-Type': 'application/json', // Указываем тип контента
     },
     body: JSON.stringify({
       // Преобразуем данные в JSON
