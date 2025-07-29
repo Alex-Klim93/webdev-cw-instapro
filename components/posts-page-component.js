@@ -22,7 +22,31 @@ export function renderPostsPageComponent({ appEl }) {
           .map(
             (post) => `
           <li class="post">
-            <!-- остальная разметка поста -->
+            <div class="post-header" data-user-id="${post.user.id}">
+              <img src="${post.user.imageUrl}" class="post-header__user-image">
+              <p class="post-header__user-name">${post.user.name}</p>
+            </div>
+            <div class="post-image-container">
+              <img class="post-image" src="${post.imageUrl}">
+            </div>
+            <div class="post-footer">
+              <div class="post-likes">
+                <button data-post-id="${post.id}" class="like-button">
+                  <img src="${post.isLiked ? './assets/images/like-active.svg' : './assets/images/like-not-active.svg'}">
+                </button>
+                <p class="post-likes-text">
+                  Нравится: <strong>${post.likes.length > 0 ? post.likes[post.likes.length - 1].name : '0'}</strong>
+                  ${post.likes.length > 1 ? `и <strong>еще ${post.likes.length - 1}</strong>` : ''}
+                </p>
+              </div>
+              <p class="post-text">
+                <span class="user-name">${post.user.name}</span>
+                ${post.description}
+              </p>
+              <p class="post-date">
+                ${new Date(post.createdAt).toLocaleString()}
+              </p>
+            </div>
           </li>
         `
           )
@@ -37,10 +61,15 @@ export function renderPostsPageComponent({ appEl }) {
     element: document.querySelector('.header-container'),
   })
 
-  // Обработчики кликов
-  document.querySelectorAll('.post-header').forEach((userEl) => {
-    userEl.addEventListener('click', () => {
-      goToPage(USER_POSTS_PAGE, { userId: userEl.dataset.userId })
+  // Обработчик клика по имени пользователя - переход на страницу его постов
+  document.querySelectorAll('.post-header, .user-name').forEach((userEl) => {
+    userEl.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const userId = userEl.closest('.post')?.querySelector('.post-header')
+        ?.dataset?.userId
+      if (userId) {
+        goToPage(USER_POSTS_PAGE, { userId })
+      }
     })
   })
 
@@ -61,7 +90,7 @@ export function renderPostsPageComponent({ appEl }) {
       apiCall({ token, postId })
         .then((response) => {
           posts = posts.map((p) => (p.id === postId ? response.post : p))
-          renderPostsPageComponent({ appEl }) // Ре-рендерим текущую страницу
+          renderPostsPageComponent({ appEl })
         })
         .catch((error) => {
           console.error(
