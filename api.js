@@ -4,6 +4,25 @@ const personalKey = 'Alex-Klim93'
 const baseHost = 'https://wedev-api.sky.pro' // Изменено с 'https://webdev-hw-api.vercel.app'
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`
 
+// export function getPosts({ token }) {
+//   return fetch(postsHost, {
+//     method: 'GET',
+//     headers: {
+//       Authorization: token,
+//     },
+//   })
+//     .then((response) => {
+//       if (response.status === 401) {
+//         throw new Error('Нет авторизации')
+//       }
+
+//       return response.json()
+//     })
+//     .then((data) => {
+//       return data.posts
+//     })
+// }
+
 export function getPosts({ token }) {
   return fetch(postsHost, {
     method: 'GET',
@@ -15,14 +34,15 @@ export function getPosts({ token }) {
       if (response.status === 401) {
         throw new Error('Нет авторизации')
       }
-
+      if (!response.ok) {
+        throw new Error('Ошибка при загрузке постов')
+      }
       return response.json()
     })
     .then((data) => {
-      return data.posts
+      return data.posts // Теперь API возвращает объект с полем posts
     })
 }
-
 export function registerUser({ login, password, name, imageUrl }) {
   return fetch(baseHost + '/api/user', {
     method: 'POST',
@@ -91,7 +111,6 @@ export function addPost({ token, description, imageUrl }) {
   })
 }
 
-// В файл api.js добавляем новую функцию
 export function getUserPosts({ token, userId }) {
   return fetch(`${postsHost}/user-posts/${userId}`, {
     method: 'GET',
@@ -103,10 +122,17 @@ export function getUserPosts({ token, userId }) {
       if (response.status === 401) {
         throw new Error('Нет авторизации')
       }
+      if (!response.ok) {
+        throw new Error('Ошибка при загрузке постов пользователя')
+      }
       return response.json()
     })
     .then((data) => {
       return data.posts
+    })
+    .catch((error) => {
+      console.error('Ошибка при загрузке постов пользователя:', error)
+      throw error
     })
 }
 
@@ -118,9 +144,8 @@ export function likePost({ token, postId }) {
       Authorization: token,
     },
   }).then((response) => {
-    if (response.status === 401) {
-      throw new Error('Нет авторизации');
-    }
+    if (response.status === 401) throw new Error('Нет авторизации');
+    if (!response.ok) throw new Error('Ошибка при установке лайка');
     return response.json();
   });
 }
@@ -132,9 +157,8 @@ export function dislikePost({ token, postId }) {
       Authorization: token,
     },
   }).then((response) => {
-    if (response.status === 401) {
-      throw new Error('Нет авторизации');
-    }
+    if (response.status === 401) throw new Error('Нет авторизации');
+    if (!response.ok) throw new Error('Ошибка при снятии лайка');
     return response.json();
   });
 }

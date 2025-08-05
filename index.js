@@ -1,4 +1,4 @@
-import { getPosts, addPost } from './api.js'
+import { getPosts, addPost, getUserPosts } from './api.js'
 import { renderAddPostPageComponent } from './components/add-post-page-component.js'
 import { renderAuthPageComponent } from './components/auth-page-component.js'
 import {
@@ -45,7 +45,6 @@ export const goToPage = (newPage, data) => {
     ].includes(newPage)
   ) {
     if (newPage === ADD_POSTS_PAGE) {
-      /* Если пользователь не авторизован, то отправляем его на страницу авторизации перед добавлением поста */
       page = user ? ADD_POSTS_PAGE : AUTH_PAGE
       return renderApp()
     }
@@ -66,7 +65,6 @@ export const goToPage = (newPage, data) => {
         })
     }
 
-    // В файле index.js заменяем блок USER_POSTS_PAGE в функции goToPage
     if (newPage === USER_POSTS_PAGE) {
       page = LOADING_PAGE
       renderApp()
@@ -88,7 +86,6 @@ export const goToPage = (newPage, data) => {
 
     page = newPage
     renderApp()
-
     return
   }
 
@@ -157,7 +154,8 @@ const renderApp = () => {
   if (page === POSTS_PAGE || page === USER_POSTS_PAGE) {
     return renderPostsPageComponent({
       appEl,
-      user, // Передаем user в компонент
+      user, // обязательно передаем user
+      goToPage, // и функцию перехода
     })
   }
 }
