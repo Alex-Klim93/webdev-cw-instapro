@@ -144,11 +144,10 @@ export function likePost({ token, postId }) {
       Authorization: token,
     },
   }).then((response) => {
-    if (response.status === 401) {
-      throw new Error('Нет авторизации')
-    }
-    return response.json()
-  })
+    if (response.status === 401) throw new Error('Нет авторизации');
+    if (!response.ok) throw new Error('Ошибка при установке лайка');
+    return response.json();
+  });
 }
 
 export function dislikePost({ token, postId }) {
@@ -158,9 +157,8 @@ export function dislikePost({ token, postId }) {
       Authorization: token,
     },
   }).then((response) => {
-    if (response.status === 401) {
-      throw new Error('Нет авторизации')
-    }
-    return response.json()
-  })
+    if (response.status === 401) throw new Error('Нет авторизации');
+    if (!response.ok) throw new Error('Ошибка при снятии лайка');
+    return response.json();
+  });
 }

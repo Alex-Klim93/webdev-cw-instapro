@@ -1,4 +1,4 @@
-import { getPosts, addPost } from './api.js'
+import { getPosts, addPost, getUserPosts } from './api.js'
 import { renderAddPostPageComponent } from './components/add-post-page-component.js'
 import { renderAuthPageComponent } from './components/auth-page-component.js'
 import {
@@ -154,7 +154,8 @@ const renderApp = () => {
   if (page === POSTS_PAGE || page === USER_POSTS_PAGE) {
     return renderPostsPageComponent({
       appEl,
-      user, // Передаем user в компонент
+      user, // обязательно передаем user
+      goToPage, // и функцию перехода
     })
   }
 }
